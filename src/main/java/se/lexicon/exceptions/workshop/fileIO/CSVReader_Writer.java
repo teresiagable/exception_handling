@@ -74,8 +74,10 @@ public class CSVReader_Writer {
 		try {
 			reader = Files.newBufferedReader(Paths.get("lastnames.txt"));
 			names = reader.lines().flatMap(line -> Stream.of(line.split(","))).collect(Collectors.toList());
-
-		} finally {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
 			if (reader != null) {
 				reader.close();
 			}
@@ -83,22 +85,28 @@ public class CSVReader_Writer {
 		return names;
 	}
 
+	/**
+	 * @param lastNames
+	 *  method with a try with resources with a catch
+	 */
 	public static void saveLastNames(List<String> lastNames) {
 
-		BufferedWriter writer;
-		try {
-			writer = Files.newBufferedWriter(Paths.get("lastnames.txt"));
+		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("lastnames.txt"))){
 			for (String toWrite : lastNames) {
 				writer.append(toWrite + ",");
 				writer.flush();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} 
 	}
 
+	/**
+	 * @param femaleNames
+	 * method handled with a try-catch-finally
+	 */
 	public static void saveFemaleNames(List<String> femaleNames) {
-		BufferedWriter writer;
+		BufferedWriter writer = null;
 		try {
 			writer = Files.newBufferedWriter(Paths.get("firstname_female.txt"));
 			for (String toWrite : femaleNames) {
@@ -108,21 +116,28 @@ public class CSVReader_Writer {
 
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
-	public static void saveMaleNames(List<String> maleNames) {
+	/**
+	 * @param maleNames 
+	 * method that “throws” and that needs to be handled at the method invocation
+	 */
+	public static void saveMaleNames(List<String> maleNames) throws IOException {
 		BufferedWriter writer;
-		try {
-			writer = Files.newBufferedWriter(Paths.get("firstname_males.txt"));
 
-			for (String toWrite : maleNames) {
-				writer.append(toWrite + ",");
-			}
-			writer.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
+		writer = Files.newBufferedWriter(Paths.get("firstname_males.txt"));
+
+		for (String toWrite : maleNames) {
+			writer.append(toWrite + ",");
 		}
+		writer.flush();
 	}
 
 }
